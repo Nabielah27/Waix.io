@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result Authenticity</title>
+</head>
+Thaneswaran
+<body>
+    <h1>Result Authenticity</h1>
+    <form>
+        <input type="file" id="qr_code_image" accept="image/*">
+        <button type="submit">Verify QR Code</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e)=> {
+            e.preventDefault();
+            const qrCodeImage = document.querySelector('#qr_code_image').files[0]
+            const reader = new FileReader();
+            reader.onload = () => {
+                const qrCodeData = reader.result();
+
+                fetch('/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({qrCodeData})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('#result').innerHTML = data.message;
+                })
+                .catch(error => console.error(error));
+            };
+            reader.readAsDataURL(qrCodeImage); 
+        });
+    </script>
+</body>
+</html>
